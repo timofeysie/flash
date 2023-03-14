@@ -28,7 +28,7 @@ export class PostsService {
     return this.postsRepository.update(id, updatePostDto);
   }
 
-  remove(id: string) {
+  remove(id: any) {
     return this.postsRepository.delete(id);
   }
 }
