@@ -13,6 +13,7 @@ export class PostsService {
   ) {}
 
   create(createPostDto: CreatePostDto) {
+    console.log('createPostDto', createPostDto);
     return this.postsRepository.save(createPostDto);
   }
 
