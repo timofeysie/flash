@@ -4,14 +4,14 @@ import { Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
 export class Post {
   @ObjectIdColumn()
   id: ObjectID;
-  @Column({ default: '' })
+  @Column()
   title: string;
-  @Column({ default: '' })
+  @Column()
   content: string;
-  @Column({ default: '' })
+  @Column()
   user: string;
-  @Column({ default: '' })
+  @Column()
   date: string;
-  @Column({ default: '' })
+  @Column()
   reactions: string;
 }
