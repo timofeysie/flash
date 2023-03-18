@@ -24,35 +24,30 @@
 
 # NestJS with TypeScript and MongoDB on Northflank
 
-This app was started following along with the following Northflank guides.
+This app was started following along with the following two-part Northflank guides.
 
-[Part 1](https://northflank.com/guides/deploy-nest-js-with-typescript-on-northflank)
+It uses [TypeORM](https://typeorm.io/entities) with NestJS as a pure Typescript backend.
 
-[Part 2](https://northflank.com/guides/deploy-nest-js-with-typescript-and-mongodb-on-northflank)
+[Part 1: Deploy NestJS with TypeScript on Northflank](https://northflank.com/guides/deploy-nest-js-with-typescript-on-northflank)
+
+[Part 2: Deploy NestJS with TypeScript and MongoDB on Northflank](https://northflank.com/guides/deploy-nest-js-with-typescript-and-mongodb-on-northflank)
+
+The author, Thomas Smyth does a good job of creating a demo destinations checklist API that can be used to keep track of places to visit and updated the list when a destination has been visited.
+
+I will take this base approach and add CRUD endpoints to support the [Redux Essentials](https://redux.js.org/tutorials/essentials/part-4-using-data) social media feed demo app to support a Typescript backend to replace the Javascript fakeApi used in the tutorial.
+
+The [clent.js issue](https://github.com/reduxjs/redux-essentials-example-app/issues/51) with the original Javascript backend was the beginning of this project.
 
 ## Getting started
+
+Similar to the above step 1, we install the nest cli, create a new project, install the prerequisites and generate a REST API.
 
 ```txt
 npm install -g @nestjs/cli
 nest new flash
-```
-
-[The dashboard](https://app.northflank.com/u/timofeysie/project/default-project/services/flash)
-
-The [deployment url](https://p01--flash--sk649jwvvmyk.code.run/)
-
-```txt
+cd flash
 npm install --save @nestjs/typeorm typeorm mongodb@3.7.3
-nest generate resource
 ```
-
-### Other useful links
-
-[TypeORM](https://typeorm.io/entities)
-
-[Create React App](https://northflank.com/guides/deploying-react-app-on-northflank)
-
-The [clent.js issue](https://github.com/reduxjs/redux-essentials-example-app/issues/51)
 
 ## Scaffold the API
 
@@ -71,6 +66,8 @@ posts.module.ts
 posts.service.ts
 posts.controller.ts
 ```
+
+Here are the modifications made to the pre-generated files to fill out the API endpoints.
 
 ## posts.entity.ts
 
@@ -335,7 +332,7 @@ DB_PASSWORD=19dd6fb5f55d75c6325090185f0d8b2c
 DB_DATABASE=499eee9281a8
 ```
 
-Normally we would install the dotenv package to suppor this:
+Normally we would install the dotenv package to support this:
 
 ```shell
 npm install dotenv --save
