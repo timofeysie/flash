@@ -305,6 +305,12 @@ export class PostsController {
 }
 ```
 
+## Testing with Postman
+
+The article for part 2 shows some screenshots of how to test each API endpoint using [Postman](https://www.postman.com/).
+
+Make sure the body of the request for POST or PATH is set to raw and JSON, not raw and Text.  If you don't then all you will wind up with is the id and nothing else.
+
 ## Running locally
 
 Create a .env file like this:
@@ -342,6 +348,20 @@ import { ConfigModule } from '@nestjs/config';
 ```
 
 Now, variables like the ```process.env.DB_USERNAME``` will be available locally.
+
+But, the app will still not connect with the cloud db when run locally.
+
+There will be an error like this:
+
+```txt
+[Nest] 19332  - 18/03/2023, 9:24:23 am   ERROR [TypeOrmModule] Unable to connect to the database. Retrying (6)...
+MongoNetworkError: failed to connect to server [mongo-0.mongo--sk649jwvvmyk.addon.code.run:27017] on first connect [Error: getaddrinfo ENOTFOUND mongo-0.mongo--sk649jwvvmyk.addon.code.run
+    at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:69:26) {
+  name: 'MongoNetworkError'
+}]
+    at Pool.<anonymous> (C:\Users\timof\repos\timofeysie\node\flash\node_modules\mongodb\lib\core\topologies\server.js:441:11)
+    at Pool.emit (node:events:365:28)
+```
 
 ## Original Description
 

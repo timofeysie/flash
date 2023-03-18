@@ -14,7 +14,19 @@ export class PostsService {
 
   create(createPostDto: CreatePostDto) {
     console.log('createPostDto', createPostDto);
-    return this.postsRepository.save(createPostDto);
+    const post: CreatePostDto = {
+      ...createPostDto,
+      date: new Date().toString(),
+      reactions: {
+        thumbsUp: 0,
+        hooray: 0,
+        heart: 0,
+        rocket: 0,
+        eyes: 0,
+      },
+    };
+    console.log('created post', post);
+    return this.postsRepository.save(post);
   }
 
   findAll() {
