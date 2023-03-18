@@ -149,6 +149,8 @@ import { Post } from './entities/post.entity';
 
 ## posts.service.ts
 
+This starts off as dummy responses.
+
 ```js
 import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -195,8 +197,19 @@ export class PostsService {
     private postsRepository: MongoRepository<Post>,
   ) {}
 
-  create(createPostDto: CreatePostDto) {
-    return this.postsRepository.save(createPostDto);
+    create(createPostDto: CreatePostDto) {
+    const post: CreatePostDto = {
+      ...createPostDto,
+      date: new Date().toString(),
+      reactions: {
+        thumbsUp: 0,
+        hooray: 0,
+        heart: 0,
+        rocket: 0,
+        eyes: 0,
+      },
+    };
+    return this.postsRepository.save(post);
   }
 
   findAll() {

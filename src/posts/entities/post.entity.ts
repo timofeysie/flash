@@ -10,6 +10,8 @@ export class Post {
   content: string;
   @Column()
   user: string;
+  @Column()
   date: string;
+  @Column()
   reactions: string;
 }
