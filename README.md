@@ -200,7 +200,7 @@ export class PostsService {
     create(createPostDto: CreatePostDto) {
     const post: CreatePostDto = {
       ...createPostDto,
-      date: new Date().toString(),
+      date: new Date().toISOString(),
       reactions: {
         thumbsUp: 0,
         hooray: 0,
