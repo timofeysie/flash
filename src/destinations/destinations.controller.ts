@@ -17,6 +17,7 @@ export class DestinationsController {
 
   @Post()
   create(@Body() createDestinationDto: CreateDestinationDto) {
+    console.log('createDestinationDto', createDestinationDto);
     return this.destinationsService.create(createDestinationDto);
   }
 
