@@ -384,11 +384,18 @@ The steps to create the users API is similar to the posts API.
 
 Then we need to edit these four files:
 
-```txt
-posts.entity.ts
-posts.module.ts
-posts.service.ts
-posts.controller.ts
+1. posts.entity.ts
+2. posts.module.ts
+3. posts.service.ts
+4. posts.controller.ts
+
+The user interface is super simple:
+
+```js
+export interface User {
+  id: any;
+  name: string;
+}
 ```
 
 ## Original Description
