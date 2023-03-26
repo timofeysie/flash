@@ -28,7 +28,7 @@ export class UsersService {
     return this.usersRepository.update(id, updateUserDto);
   }
 
-  remove(id: string) {
+  remove(id: any) {
     return this.usersRepository.delete(id);
   }
 }

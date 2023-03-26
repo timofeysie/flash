@@ -398,6 +398,31 @@ export interface User {
 }
 ```
 
+## Scaffold the Notifications API
+
+The steps to create the notifications API is similar to the posts and user APIs.
+
+- Run ```nest generate resource```.
+- When prompted enter the resource name ```users```.
+- Select REST API.
+- Finally enter ```Y``` when asked whether or not we want to “generate CRUD entry points”.
+
+Then we need to edit these four files:
+
+1. posts.entity.ts
+2. posts.module.ts
+3. posts.service.ts
+4. posts.controller.ts
+
+The user interface is super simple:
+
+```js
+export interface User {
+  id: any;
+  name: string;
+}
+```
+
 ## Original Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
