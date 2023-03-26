@@ -384,7 +384,7 @@ The steps to create the users API is similar to the posts API.
 
 Then we need to edit these four files:
 
-1. posts.entity.ts
+1. post.entity.ts
 2. posts.module.ts
 3. posts.service.ts
 4. posts.controller.ts
@@ -403,25 +403,136 @@ export interface User {
 The steps to create the notifications API is similar to the posts and user APIs.
 
 - Run ```nest generate resource```.
-- When prompted enter the resource name ```users```.
+- When prompted enter the resource name ```notifications```.
 - Select REST API.
 - Finally enter ```Y``` when asked whether or not we want to “generate CRUD entry points”.
 
 Then we need to edit these four files:
 
-1. posts.entity.ts
-2. posts.module.ts
-3. posts.service.ts
-4. posts.controller.ts
+1. notification.entity.ts
+2. notifications.module.ts
+3. notifications.service.ts
+4. notifications.controller.ts
 
-The user interface is super simple:
+The user interface for notifications looks like this:
 
 ```js
-export interface User {
-  id: any;
-  name: string;
+interface Notification {
+    id: any;
+    user: string;
+    date: string;
+    message: string;
 }
 ```
+
+The notification.entity.ts will look like this:
+
+```js
+@Entity()
+export class Notification {
+  @ObjectIdColumn()
+  id: ObjectID;
+  @Column()
+  user: string;
+  @Column()
+  date: string;
+  @Column()
+  message: string;
+}
+```
+
+Notice Nestjs is smart enough to make it a singular notification.  Very cool.  The same is true for the DTO objects in the controller:
+
+```js
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+import { NotificationsService } from './notifications.service';
+import { CreateNotificationDto } from './dto/create-notification.dto';
+import { UpdateNotificationDto } from './dto/update-notification.dto';
+
+@Controller('notifications')
+export class NotificationsController {
+  constructor(private readonly notificationsService: NotificationsService) {}
+
+  @Post()
+  create(@Body() createNotificationDto: CreateNotificationDto) {
+    return this.notificationsService.create(createNotificationDto);
+  }
+
+  @Get()
+  findAll() {
+    return this.notificationsService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: any) {
+    return this.notificationsService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: any,
+    @Body() updateNotificationDto: UpdateNotificationDto,
+  ) {
+    return this.notificationsService.update(+id, updateNotificationDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: any) {
+    return this.notificationsService.remove(+id);
+  }
+}
+```
+
+The notifications.service.ts looks like this:
+
+```js
+@Injectable()
+export class NotificationsService {
+  constructor(
+    @InjectRepository(Notification)
+    private notificationsRepository: MongoRepository<Notification>,
+  ) {}
+  create(createNotificationDto: CreateNotificationDto) {
+    const notification: CreateNotificationDto = {
+      ...createNotificationDto,
+      date: new Date().toISOString(),
+    };
+    return this.notificationsRepository.save(notification);
+  }
+
+  findAll() {
+    return this.notificationsRepository.find();
+  }
+
+  findOne(id: any) {
+    return this.notificationsRepository.findOne(id);
+  }
+
+  update(id: any, updateNotificationDto: UpdateNotificationDto) {
+    return this.notificationsRepository.update(id, updateNotificationDto);
+  }
+
+  remove(id: any) {
+    return this.notificationsRepository.delete(id);
+  }
+}
+```
+
+Import the TypeOrm feature to the notifications.module.ts file like this:
+
+```js
+imports: [TypeOrmModule.forFeature([Notification])],
+```
+
+And we are pretty much done.  Create some notifications in Postman to test out the CRUD endpoints and see how it goes.
 
 ## Original Description
 

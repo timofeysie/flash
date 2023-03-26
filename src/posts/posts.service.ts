@@ -13,7 +13,6 @@ export class PostsService {
   ) {}
 
   create(createPostDto: CreatePostDto) {
-    console.log('createPostDto', createPostDto);
     const post: CreatePostDto = {
       ...createPostDto,
       date: new Date().toISOString(),

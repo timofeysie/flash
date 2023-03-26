@@ -1,26 +1,37 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { MongoRepository } from 'typeorm';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
+import { Notification } from './entities/notification.entity';
 
 @Injectable()
 export class NotificationsService {
+  constructor(
+    @InjectRepository(Notification)
+    private notificationsRepository: MongoRepository<Notification>,
+  ) {}
   create(createNotificationDto: CreateNotificationDto) {
-    return 'This action adds a new notification';
+    const notification: CreateNotificationDto = {
+      ...createNotificationDto,
+      date: new Date().toISOString(),
+    };
+    return this.notificationsRepository.save(notification);
   }
 
   findAll() {
-    return `This action returns all notifications`;
+    return this.notificationsRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} notification`;
+  findOne(id: any) {
+    return this.notificationsRepository.findOne(id);
   }
 
-  update(id: number, updateNotificationDto: UpdateNotificationDto) {
-    return `This action updates a #${id} notification`;
+  update(id: any, updateNotificationDto: UpdateNotificationDto) {
+    return this.notificationsRepository.update(id, updateNotificationDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} notification`;
+  remove(id: any) {
+    return this.notificationsRepository.delete(id);
   }
 }
