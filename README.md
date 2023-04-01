@@ -438,6 +438,10 @@ export class Notification {
   date: string;
   @Column()
   message: string;
+  @Column()
+  read: boolean;
+  @Column()
+  isNew: boolean;
 }
 ```
 
@@ -533,6 +537,8 @@ imports: [TypeOrmModule.forFeature([Notification])],
 ```
 
 And we are pretty much done.  Create some notifications in Postman to test out the CRUD endpoints and see how it goes.
+
+You can find the full changes done in [this commit](https://github.com/timofeysie/flash/commit/c9d5ce28dc528f4b0aea81c13ca51a7b35a21568).
 
 ## Original Description
 
