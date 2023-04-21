@@ -10,4 +10,8 @@ export class Notification {
   date: string;
   @Column()
   message: string;
+  @Column()
+  read: boolean;
+  @Column()
+  isNew: boolean;
 }
