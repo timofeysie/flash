@@ -4,8 +4,8 @@ import { MongoRepository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 @Injectable()
 export class UsersService {
@@ -15,29 +15,32 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: any) {
-    const salt = await bcrypt?.genSalt(10)
+    console.log('create');
+    const salt = await bcrypt?.genSalt(10);
     if (createUserDto.name) {
       console.log('register new user', createUserDto);
-      createUserDto.password = await bcrypt.hash(createUserDto.password, salt)
+      createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
       return this.usersRepository.save(createUserDto);
     } else {
-      if (createUserDto.id) {
-        console.log('found login for', createUserDto)
-        const hashedPassword = await bcrypt.hash(createUserDto.password, salt)
-        const user = await this.usersRepository.findOne(createUserDto.id);
-        const match = await bcrypt.compare(user.password, hashedPassword)
-        if (user && match) {
-          console.log('pw match')
-          const token = jwt.sign(createUserDto.id, process.env.JWT_SECRET, { expiresIn: '12h' })
-          const response = {
-            _id: createUserDto.id,
-            firstName: createUserDto.name,
-            email: user.email,
-            userToken: token,
-          }
-        createUserDto.password = await bcrypt.hash(createUserDto.password, salt)
+      console.log('found login for', createUserDto);
+      const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
+      const user = await this.usersRepository.findOne(createUserDto.id);
+      const match = await bcrypt.compare(user.password, hashedPassword);
+      if (user && match) {
+        console.log('pw match');
+        const token = jwt.sign(createUserDto.id, process.env.JWT_SECRET, {
+          expiresIn: '12h',
+        });
+        const response = {
+          _id: createUserDto.id,
+          firstName: createUserDto.name,
+          email: user.email,
+          userToken: token,
+        };
+        console.log('login success', response);
         return response;
-        }
+      } else {
+        return { error: 'login failed'}
       }
     }
   }
