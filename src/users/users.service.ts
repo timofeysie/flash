@@ -15,13 +15,12 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: any) {
+    const salt = await bcrypt?.genSalt(10)
     if (createUserDto.name) {
       console.log('register new user', createUserDto);
-      const salt = await bcrypt.genSalt(10)
       createUserDto.password = await bcrypt.hash(createUserDto.password, salt)
       return this.usersRepository.save(createUserDto);
     } else {
-      const salt = await bcrypt.genSalt(10)
       if (createUserDto.id) {
         console.log('found login for', createUserDto)
         const hashedPassword = await bcrypt.hash(createUserDto.password, salt)
