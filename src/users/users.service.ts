@@ -25,22 +25,25 @@ export class UsersService {
       console.log('found login for', createUserDto);
       const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
       const user = await this.usersRepository.findOne(createUserDto.id);
+      console.log('user', user);
       const match = await bcrypt.compare(user.password, hashedPassword);
+      console.log('match', match);
       if (user && match) {
         console.log('pw match');
         const token = jwt.sign(createUserDto.id, process.env.JWT_SECRET, {
           expiresIn: '12h',
         });
+        console.log('token', token);
         const response = {
           _id: createUserDto.id,
           firstName: createUserDto.name,
           email: user.email,
           userToken: token,
         };
-        console.log('login success', response);
+        console.log('response', response);
         return response;
       } else {
-        return { error: 'login failed'}
+        return { error: 'login failed' };
       }
     }
   }
