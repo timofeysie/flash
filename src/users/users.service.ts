@@ -25,8 +25,9 @@ export class UsersService {
       console.log('found login for', createUserDto);
       const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
       const user = await this.usersRepository.findOne(createUserDto.id);
+      const dbPassword = await bcrypt.hash(user.password, salt);
       console.log('user', user);
-      const match = await bcrypt.compare(user.password, hashedPassword);
+      const match = await bcrypt.compare(dbPassword, hashedPassword);
       console.log('match', match);
       if (user && match) {
         console.log('pw match');
