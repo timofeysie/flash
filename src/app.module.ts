@@ -7,6 +7,8 @@ import { PostsModule } from './posts/posts.module';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @Module({
   imports: [

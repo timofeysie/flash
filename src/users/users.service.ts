@@ -16,36 +16,33 @@ export class UsersService {
 
   async create(createUserDto: any) {
     console.log('create');
-    const salt = await bcrypt?.genSalt(10);
     if (createUserDto.name) {
       console.log('register new user', createUserDto);
+      const salt = await bcrypt?.genSalt(10);
       createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
       return this.usersRepository.save(createUserDto);
     } else {
       console.log('found login for', createUserDto);
-      const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
-      const user = await this.usersRepository.findOne(createUserDto.id);
-      const dbPassword = await bcrypt.hash(user.password, salt);
-      console.log('user', user);
-      const match = await bcrypt.compare(dbPassword, hashedPassword);
-      console.log('match', match);
-      if (user && match) {
-        console.log('pw match');
-        const token = jwt.sign(createUserDto.id, process.env.JWT_SECRET, {
-          expiresIn: '12h',
+      const saltRounds = 10;
+      bcrypt
+        .hash(createUserDto.password, saltRounds)
+        .then(async (hashedPassword) => {
+          console.log(`Hash: ${hashedPassword}`);
+          // get the user by ???
+          const user = await this.usersRepository.findOne(createUserDto.name);
+          console.log('found user', user);
+          bcrypt
+            .compare(user.password, hashedPassword)
+            .then((res) => {
+              console.log('compared', res);
+              return res;
+            })
+            .catch((err) => console.error(err.message));
+        })
+        .then((hash) => {
+          console.log(`Hash: ${hash}`);
+          // Store hash in your password DB.
         });
-        console.log('token', token);
-        const response = {
-          _id: createUserDto.id,
-          firstName: createUserDto.name,
-          email: user.email,
-          userToken: token,
-        };
-        console.log('response', response);
-        return response;
-      } else {
-        return { error: 'login failed' };
-      }
     }
   }
 
