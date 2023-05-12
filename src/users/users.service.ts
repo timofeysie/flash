@@ -22,25 +22,33 @@ export class UsersService {
       createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
       return this.usersRepository.save(createUserDto);
     } else {
-      console.log('found login for', createUserDto);
+      console.log('found login for', createUserDto); // found login for { email: 'asdf@asdf.com', password: 'asdf' }
       const saltRounds = 10;
       bcrypt
         .hash(createUserDto.password, saltRounds)
         .then(async (hashedPassword) => {
-          console.log(`Hash: ${hashedPassword}`);
+          console.log(`Hash: ${hashedPassword}`); // Hash: $2b$10$l0boKbNWt4fvwOOK1.ElNOAZW4Zmb4KkQ.FEVBnTJhPV7hHv.pVoi
           // get the user by ???
-          const user = await this.usersRepository.findOne(createUserDto.name);
-          console.log('found user', user);
-          bcrypt
-            .compare(user.password, hashedPassword)
-            .then((res) => {
-              console.log('compared', res);
-              return res;
-            })
-            .catch((err) => console.error(err.message));
+          const user = await this.usersRepository.find({
+            where: {
+              email: createUserDto.email,
+            },
+          });
+          console.log('found user', user); // found user User { id: 6415b54443a21a00036532af, name: 'tim' }
+          // bcrypt
+          //   .compare(user.password, hashedPassword)
+          //   .then((res) => {
+          //     console.log('compared', res);
+          //     return res;
+          //   })
+          //   .catch((err) => console.error(err.message)); // stderr F data and hash arguments required
+          if (user[0]?.password === hashedPassword) {
+            // return JWT
+            return true;
+          }
         })
         .then((hash) => {
-          console.log(`Hash: ${hash}`);
+          console.log(`Hash 2: ${hash}`); // undefined
           // Store hash in your password DB.
         });
     }
