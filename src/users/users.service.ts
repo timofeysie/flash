@@ -15,15 +15,19 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: any) {
-    console.log('create');
+    const saltRounds = 10;
+    console.log('create function');
     if (createUserDto.name) {
       console.log('register new user', createUserDto);
-      const salt = await bcrypt?.genSalt(10);
-      createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
+      const newHash = await bcrypt?.genSalt(saltRounds);
+      createUserDto.password = await bcrypt.hash(
+        createUserDto.password,
+        saltRounds,
+      );
+      console.log('newHash', newHash);
       return this.usersRepository.save(createUserDto);
     } else {
       console.log('found login for', createUserDto); // found login for { email: 'asdf@asdf.com', password: 'asdf' }
-      const saltRounds = 10;
       bcrypt
         .hash(createUserDto.password, saltRounds)
         .then(async (hashedPassword) => {
@@ -46,6 +50,11 @@ export class UsersService {
         .then((hash) => {
           console.log(`Hash 2: ${hash}`); // undefined
           // Store hash in your password DB.
+          if (hash === true) {
+            return { jwt: 'example' };
+          } else {
+            return { jwt: null };
+          }
         });
     }
   }
