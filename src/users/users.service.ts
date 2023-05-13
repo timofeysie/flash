@@ -35,26 +35,12 @@ export class UsersService {
             },
           });
           console.log('found user', user); // found user User { id: 6415b54443a21a00036532af, name: 'tim' }
-          // bcrypt
-          //   .compare(user.password, hashedPassword)
-          //   .then((res) => {
-          //     console.log('compared', res);
-          //     return res;
-          //   })
-          //   .catch((err) => console.error(err.message)); // stderr F data and hash arguments required
-          if (user[0]?.password) {
-            bcrypt
-              .hash(createUserDto.password, saltRounds)
-              .then(async (existingHashedPassword) => {
-                console.log('hashedPassword', hashedPassword);
-                console.log('existingHashedPassword', existingHashedPassword);
-                if (existingHashedPassword === hashedPassword) {
-                  // return JWT
-                  return true;
-                } else {
-                  return false;
-                }
-              });
+
+          if (user[0]?.password === hashedPassword) {
+            // return JWT
+            return true;
+          } else {
+            return false;
           }
         })
         .then((hash) => {
