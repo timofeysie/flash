@@ -27,11 +27,11 @@ export class UsersService {
       console.log('newHash', newHash);
       return this.usersRepository.save(createUserDto);
     } else {
-      console.log('found login for', createUserDto); // found login for { email: 'asdf@asdf.com', password: 'asdf' }
+      console.log('found login for', createUserDto); // found login for { email: 'lala@hotmail.com', password: 'lala' }
       bcrypt
         .hash(createUserDto.password, saltRounds)
         .then(async (hashedPassword) => {
-          console.log(`Hash: ${hashedPassword}`); // Hash: $2b$10$l0boKbNWt4fvwOOK1.ElNOAZW4Zmb4KkQ.FEVBnTJhPV7hHv.pVoi
+          console.log(`Hash: ${hashedPassword}`); // Hash: "$2b$10$ub7oBFmsPtUniVBcvtijiORbUmywJylgy5c7KvqpBVRfwaWt3fwkq"
           // get the user by ???
           const user = await this.usersRepository.find({
             where: {
@@ -41,9 +41,11 @@ export class UsersService {
           console.log('found user', user); // found user User { id: 6415b54443a21a00036532af, name: 'tim' }
 
           if (user[0]?.password === hashedPassword) {
+            console.log('pw match return JWT');
             // return JWT
             return true;
           } else {
+            console.log('pw do not match return false');
             return false;
           }
         })
