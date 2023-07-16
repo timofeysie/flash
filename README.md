@@ -574,26 +574,30 @@ There is a whole nother [article for this](https://javascript.plainenglish.io/oa
 
 ## AWS Cognito
 
+To accomplish this, I found someone describing the kind of thing we want.
+
+Using OAuth with Nest.js and TypeORM.  [The article](https://javascript.plainenglish.io/oauth2-in-nestjs-for-social-login-google-facebook-twitter-etc-8b405d570fd2) by Csaba Apagyi seems worth a try.  It's a little terse, but giving it a shot here.
+
+[The source code](https://github.com/thisismydesign/nestjs-starter/tree/master/src/server/app/auth/cognito).
+
 To Setup Cognito we need to create:
 
 - a User Pool
 - an App Client
 - configure the Hosted UI
 
-Add the config details to the .env file.
-https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-integration.html
-The flash user pool
-https://ap-southeast-2.console.aws.amazon.com/cognito/v2/idp/user-pools/ap-southeast-2_W0XqkTFtm/users?region=ap-southeast-2#
-App Client
-Create an app client
-Allowed callback URL
+Here is [the AWS docs link](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-integration.html).
 
-https://github.com/thisismydesign/nestjs-starter/tree/master/src/server/app/auth/cognito
+Here is my [user pool](https://ap-southeast-2.console.aws.amazon.com/cognito/v2/idp/user-pools/ap-southeast-2_W0XqkTFtm/users?region=ap-southeast-2#).
+
+Add the config details to the .env file.  It was not easy to work out what data related to the key values.
 
 OAUTH_COGNITO_Id is usually referred to as the "App client ID"
+
 OAUTH_COGNITO_REDIRECT_URL is known as a Allowed callback URL
 
 OAUTH_COGNITO_REDIRECT_URL=https://radiant-springs-38893.herokuapp.com/
+
 OAUTH_COGNITO_DOMAIN=https://test-app.auth.us-east-1.amazoncognito.com
 
 OAUTH_COGNITO_DOMAIN represents the base URL of your Amazon Cognito User Pool domain. This domain is used to construct the complete URLs for the authorization and token endpoints required for the OAuth flow.
@@ -602,9 +606,7 @@ Based on the example code, the OAUTH_COGNITO_DOMAIN should be the base URL of th
 
 The base URL of the Amazon Cognito User Pool domain is not directly visible in the AWS Management Console. Instead, you can construct the base URL based on your region and user pool ID.
 
-The base URL for the Amazon Cognito User Pool domain follows this format:
-
-https://your-user-pool-id.auth.region.amazonaws.com
+The base URL for the Amazon Cognito User Pool domain follows this format: https://your-user-pool-id.auth.region.amazonaws.com
 
 To find the base URL of your Amazon Cognito User Pool domain, you need to know the following:
 
@@ -616,18 +618,15 @@ For this app, it's ap-southeast-2 (Asia Pacific: Sydney).
 
 With these two pieces of information, you can construct the base URL for your Amazon Cognito User Pool domain. For example, if your User Pool ID is us-west-2_abcdefghi and your AWS region is us-west-2, then your base URL would be:
 
-https://us-west-2_abcdefghi.auth.us-west-2.amazoncognito.com
-Please note that the actual domain may vary depending on the region where your user pool is located. So always double-check the region in your AWS Management Console.
-
+```txt
 User pool ID: ap-southeast-2_W0XqkTFtm
 AWS region: ap-southeast-2
+```
 
 So if my User pool name: flash.
 AWS region: ap-southeast-2
 
-Then the base URL for the Amazon Cognito User Pool domain
-
-https://flash.auth.ap-southeast-2.amazonaws.com
+Then the base URL for the Amazon Cognito User Pool domain: https://flash.auth.ap-southeast-2.amazonaws.com
 
 ### The server setup
 
@@ -801,6 +800,15 @@ import { AuthModule } from './auth/auth.module';
 ```
 
 Now it's time to test it out.  The big tragedy of this backend is that, based on Northflanks bd service, I was unable to setup mongo locally to test things, so everything must be pushed to the server for testing.
+
+### The errors
+
+Error: Cannot find module 'passport'
+2023-07-16T23:14:01.865318681Z stderr F Require stack:
+2023-07-16T23:14:01.865322305Z stderr F - /usr/src/app/node_modules/@nestjs/passport/dist/auth.guard.js
+2023-07-16T23:14:01.865325341Z stderr F - /usr/src/app/node_modules/@nestjs/passport/dist/index.js
+
+I think I installed the types but not the package itself.  Add that now:  ```npm i passport --save```
 
 ## Original Description
 
