@@ -540,6 +540,238 @@ And we are pretty much done.  Create some notifications in Postman to test out t
 
 You can find the full changes done in [this commit](https://github.com/timofeysie/flash/commit/c9d5ce28dc528f4b0aea81c13ca51a7b35a21568).
 
+## Current work
+
+Despite the ease of use in create CRUD APIs, creating an authentication system with JWTs has not been so smooth.
+
+A user can be registered, but the hash created to compare to the stored hash always comes out different:
+
+```txt
+2023-06-09T08:01:19.795675742Z stdout F found user [
+2023-06-09T08:01:19.795727222Z stdout F   User {
+2023-06-09T08:01:19.795734284Z stdout F     id: 6482dc39f4ca5b00037d95f5,
+2023-06-09T08:01:19.795737957Z stdout F     name: 'asdffdsa',
+2023-06-09T08:01:19.795741237Z stdout F     email: 'fdsa@fdsa.com',
+2023-06-09T08:01:19.795744694Z stdout F     password: '$2b$10$GMDbQ4/AcHaQVYdA8Du8h.bsF6.rWt43Wqtz07flWLrS759TvhutC'
+2023-06-09T08:01:19.795747804Z stdout F   }
+2023-06-09T08:01:19.7957508Z stdout F ]
+2023-06-09T08:01:19.79595855Z stdout F pw do not match return false
+2023-06-09T08:01:19.795978691Z stdout F Hash 2: false
+```
+
+Time to look at both hash creation code sections to see what's going on there.
+
+## AWS Cognito
+
+To Setup Cognito we need to create:
+
+- a User Pool
+- an App Client
+- configure the Hosted UI
+
+Add the config details to the .env file.
+https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-integration.html
+The flash user pool
+https://ap-southeast-2.console.aws.amazon.com/cognito/v2/idp/user-pools/ap-southeast-2_W0XqkTFtm/users?region=ap-southeast-2#
+App Client
+Create an app client
+Allowed callback URL
+
+https://github.com/thisismydesign/nestjs-starter/tree/master/src/server/app/auth/cognito
+
+OAUTH_COGNITO_Id is usually referred to as the "App client ID"
+OAUTH_COGNITO_REDIRECT_URL is known as a Allowed callback URL
+
+OAUTH_COGNITO_REDIRECT_URL=https://radiant-springs-38893.herokuapp.com/
+OAUTH_COGNITO_DOMAIN=https://test-app.auth.us-east-1.amazoncognito.com
+
+OAUTH_COGNITO_DOMAIN represents the base URL of your Amazon Cognito User Pool domain. This domain is used to construct the complete URLs for the authorization and token endpoints required for the OAuth flow.
+
+Based on the example code, the OAUTH_COGNITO_DOMAIN should be the base URL of the Amazon Cognito User Pool domain, something like https://your-user-pool-domain.auth.region.amazonaws.com.
+
+The base URL of the Amazon Cognito User Pool domain is not directly visible in the AWS Management Console. Instead, you can construct the base URL based on your region and user pool ID.
+
+The base URL for the Amazon Cognito User Pool domain follows this format:
+
+https://your-user-pool-id.auth.region.amazonaws.com
+
+To find the base URL of your Amazon Cognito User Pool domain, you need to know the following:
+
+Your User Pool ID: You can find this in the AWS Management Console under Amazon Cognito > Manage User Pools > (Select your user pool) > Pool details > Pool Id.
+
+The AWS region where your User Pool is located: You can find this in the AWS Management Console's top-right corner. The region will be something like us-east-1, eu-west-2, etc.
+
+For this app, it's ap-southeast-2 (Asia Pacific: Sydney).
+
+With these two pieces of information, you can construct the base URL for your Amazon Cognito User Pool domain. For example, if your User Pool ID is us-west-2_abcdefghi and your AWS region is us-west-2, then your base URL would be:
+
+https://us-west-2_abcdefghi.auth.us-west-2.amazoncognito.com
+Please note that the actual domain may vary depending on the region where your user pool is located. So always double-check the region in your AWS Management Console.
+
+User pool ID: ap-southeast-2_W0XqkTFtm
+AWS region: ap-southeast-2
+
+So if my User pool name: flash.
+AWS region: ap-southeast-2
+
+Then the base URL for the Amazon Cognito User Pool domain
+
+https://flash.auth.ap-southeast-2.amazonaws.com
+
+### The server setup
+
+The server setup shows [these four files](https://github.com/thisismydesign/nestjs-starter/tree/master/src/server/app/auth/cognito):
+
+```txt
+cognito-oauth.controller.ts
+cognito-oauth.guard.ts
+cognito-oauth.module.ts
+cognito-oauth.strategy.ts
+```
+
+Actually, the files in the repo are quite different from the ones [in the article](https://github.com/thisismydesign/nestjs-starter/tree/master/src/server/app/auth/cognito).  I will use the files from the article, because the repo is a model for all kinds of things such as GraphQL and not just Oauth with Cognito.
+
+Some packages will need to be installed with npm:
+
+```txt
+@nestjs/passport
+passport-oauth2
+axios
+```
+
+After this there is still an issue in the controller:
+
+```js
+@Controller('auth/cognito')
+export class CognitoOauthController {
+  constructor(private jwtAuthService: JwtAuthService) {}
+```
+
+The error is: ***Cannot find name 'JwtAuthService'.ts(2304) Parameter 'jwtAuthService' of constructor from exported class has or is using private name 'JwtAuthService'.ts(4063)***
+
+There is no other mention of the JwtAuthService, so for this we must go to the repo.  The [jwt-auth.service.ts](https://github.com/thisismydesign/nestjs-starter/blob/master/src/server/app/auth/jwt/jwt-auth.service.ts)
+
+But to use this, we will need a whole nother four files:
+
+```txt
+jwt-auth.guard.ts
+jwt-auth.module.ts
+jwt-auth.service.ts
+jwt-auth.strategy.ts
+```
+
+These will also require some libraries to also be installed with npm (or yarn or whatever):
+
+```txt
+@nestjs/jwt
+passport-jwt
+```
+
+But this rabbit hole doesn't stop there.  We will also need these files to support those files:
+
+```txt
+src/server/config/constants
+../../users/user.entity
+```
+
+We have a user.entity file already, but in this location:
+
+```txt
+import { User } from '../../users/entities/user.entity';
+```
+
+One problem is it doesn't have a username property: *Property 'username' does not exist on type 'User'.ts(2339)*
+
+```js
+@Entity()
+export class User {
+  @ObjectIdColumn()
+  id: ObjectID;
+  @Column()
+  name: string;
+  @Column()
+  email: string;
+  @Column()
+  password: string;
+  @Column()
+  username: string; <-- add this
+}
+```
+
+After this, there is still an error on the *sub*: *Type 'ObjectID' is not assignable to type 'number'.ts(2322) jwt-auth.strategy.ts(7, 28): The expected type comes from property 'sub' which is declared here on type 'JwtPayload'*
+
+```js
+  login(user: User) {
+    const payload: JwtPayload = { username: user.username, sub: user.id };
+    return {
+      accessToken: this.jwtService.sign(payload),
+    };
+  }
+```
+
+It took about ten minutes with ChatGPT to get something that solved this error:
+
+```js
+@Injectable()
+export class JwtAuthService {
+  constructor(private jwtService: JwtService) {}
+
+  login(user: User) {
+    const numericId = parseInt(user.id.toHexString(), 16); // Convert hexadecimal string to a number
+    const payload: JwtPayload = { username: user.username, sub: numericId };
+    return {
+      accessToken: this.jwtService.sign(payload),
+    };
+  }
+}
+```
+
+Next, the constants.  I put it in a slightly different location:
+
+```js
+import { SESSION_COOKIE_KEY } from '../config/constants';
+```
+
+Next, the Nest.js controller:
+
+```js
+@Get('redirect')
+  @UseGuards(CognitoOauthGuard)
+  async cognitoAuthRedirect(@Req() req: Request, @Res() res: Response) {
+    // Here we can issue a JWT token to manage the user session from the app
+    // For now, we'll just show the user object
+    return req.user;
+  }
+```
+
+It has the following error on 'user': *Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.ts(2339)*
+
+ChatGPT recommended this the User object, but *Module '"@nestjs/jwt"' has no exported member 'User'.ts(2305)*.
+
+After a bit, this works: *create a custom decorator to extend the Request object and provide access to the authenticated user.*
+
+```js
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+
+export const User = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    return request.user;
+  },
+);
+
+@Controller('auth/cognito')
+export class CognitoOauthController {
+  constructor(private jwtAuthService: JwtAuthService) {}
+  ...
+  @Get('redirect')
+  @UseGuards(CognitoOauthGuard)
+  async cognitoAuthRedirect(@User() user: any) {
+    // Now you can access the user object from the CognitoOauthGuard
+    return user;
+  }
+```
+
 ## Original Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
