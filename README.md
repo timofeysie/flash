@@ -540,7 +540,7 @@ And we are pretty much done.  Create some notifications in Postman to test out t
 
 You can find the full changes done in [this commit](https://github.com/timofeysie/flash/commit/c9d5ce28dc528f4b0aea81c13ca51a7b35a21568).
 
-## Current work
+## Failed JWT attempt
 
 Despite the ease of use in create CRUD APIs, creating an authentication system with JWTs has not been so smooth.
 
@@ -560,6 +560,17 @@ A user can be registered, but the hash created to compare to the stored hash alw
 ```
 
 Time to look at both hash creation code sections to see what's going on there.
+
+### Next steps
+
+There two more steps to make this a complete authentication flow:
+
+1. Issue a JWT token in the redirect endpoint so that we can handle the user session in the app. You can see how to do that in my OAuth2 in NestJS for social login article.
+2. Find or store user data in the validate callback. I’m using a DB with TypeORM Repository in the nestjs-starter repo. You can also learn more from the official docs.
+
+### Issue a JWT token in the redirect endpoint
+
+There is a whole nother [article for this](https://javascript.plainenglish.io/oauth2-in-nestjs-for-social-login-google-facebook-twitter-etc-8b405d570fd2).
 
 ## AWS Cognito
 
@@ -771,6 +782,25 @@ export class CognitoOauthController {
     return user;
   }
 ```
+
+There are two more files needed not mentioned in the article.  I suppose they assume we know how to add modules to a nest app.
+
+In the auth directory, add these:
+
+```txt
+auth.controller.ts
+auth.module.ts
+```
+
+This includes the /google/google-oauth.module.   Do we need that?  Lets leave that out for now.
+
+Next, add the module file to the main app.module.ts file:
+
+```js
+import { AuthModule } from './auth/auth.module';
+```
+
+Now it's time to test it out.  The big tragedy of this backend is that, based on Northflanks bd service, I was unable to setup mongo locally to test things, so everything must be pushed to the server for testing.
 
 ## Original Description
 
