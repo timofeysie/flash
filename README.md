@@ -646,6 +646,7 @@ Some packages will need to be installed with npm:
 ```txt
 @nestjs/passport
 passport-oauth2
+passport
 axios
 ```
 
@@ -831,6 +832,8 @@ There are actually two how-to articles on this subject by Csaba Apagyi:
 - [OAuth2 in NestJS for Social Login (Google, Facebook, Twitter, etc)](https://javascript.plainenglish.io/oauth2-in-nestjs-for-social-login-google-facebook-twitter-etc-8b405d570fd2)
 
 The JwtModule only appears in the second article.  I was initially following the first one.  I only included the files from the repo with the JwtModule because the JwtAuthService appears in the cognito-oath.controller constructor.  However, looking at that again, I see it's not actually used.  But since I do want social login, I guess it's OK to have a look at the second article and see what I missed by going directly to the repo.
+
+npm install @nestjs/config
 
 ## Original Description
 
