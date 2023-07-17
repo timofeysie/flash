@@ -13,7 +13,7 @@ export const User = createParamDecorator(
 
 @Controller('auth/cognito')
 export class CognitoOauthController {
-  constructor(private jwtAuthService: JwtAuthService) {}
+  //constructor(private jwtAuthService: JwtAuthService) {}
 
   @Get()
   @UseGuards(CognitoOauthGuard)

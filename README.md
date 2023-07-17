@@ -810,6 +810,28 @@ Error: Cannot find module 'passport'
 
 I think I installed the types but not the package itself.  Add that now:  ```npm i passport --save```
 
+Next error:
+
+[Nest] 3  - 07/16/2023, 11:42:46 PM
+ERROR [ExceptionHandler] Nest can't resolve dependencies of the JWT_MODULE_OPTIONS (?). Please make sure that the argument ConfigService at index [0] is available in the JwtModule context.
+2023-07-16T23:42:46.506815418Z stderr F
+2023-07-16T23:42:46.506819548Z stderr F Potential solutions:
+2023-07-16T23:42:46.506823379Z stderr F - Is JwtModule a valid NestJS module?
+2023-07-16T23:42:46.50682665Z stderr F - If ConfigService is a provider, is it part of the current JwtModule?
+2023-07-16T23:42:46.506830391Z stderr F - If ConfigService is exported from a separate @Module, is that module imported within JwtModule?
+2023-07-16T23:42:46.506833674Z stderr F   @Module({
+2023-07-16T23:42:46.506836851Z stderr F     imports: [ /* the Module containing ConfigService */ ]
+2023-07-16T23:42:46.50684042Z stderr F   })
+
+I'm not sure where the JwtModule needs to be configured.
+
+There are actually two how-to articles on this subject by Csaba Apagyi:
+
+- [Cognito via OAuth2 in NestJS: Outsourcing Authentication Without Vendor Lock-in](https://javascript.plainenglish.io/cognito-via-oauth2-in-nestjs-outsourcing-authentication-without-vendor-lock-in-ce908518f547)
+- [OAuth2 in NestJS for Social Login (Google, Facebook, Twitter, etc)](https://javascript.plainenglish.io/oauth2-in-nestjs-for-social-login-google-facebook-twitter-etc-8b405d570fd2)
+
+The JwtModule only appears in the second article.  I was initially following the first one.  I only included the files from the repo with the JwtModule because the JwtAuthService appears in the cognito-oath.controller constructor.  However, looking at that again, I see it's not actually used.  But since I do want social login, I guess it's OK to have a look at the second article and see what I missed by going directly to the repo.
+
 ## Original Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
